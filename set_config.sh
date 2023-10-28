@@ -16,27 +16,6 @@ write_config() {
     fi
 }
 
-check_config() {
-    while IFS= read -r line; do
-        key=${line%%=*}
-        value=${line#*=}
-        if [[ "$key" == "BACKUP_DESTINATION" || "$key" == "SOURCE" || "$key" == "RECORDS_FILE_DESTINATION" ]]; then
-            if [ ! -d "$value" ]; then 
-                echo "{$key} must be a directory!!"
-            fi
-        fi
-        if [[ "$key" == "COMPRESSION_TYPE" ]]; then
-            if [[ "$value" != "tar.gz" && "$value" != "tar.bz2" && "$value" != "zip" ]]; then 
-                echo "$key must be one of  tar.gz/tar.bz2/zip !!"
-            fi
-        fi
-        export "$key=$value"
-        
-    echo "Config was set properly"
-
-    done < "$config_filename"
-}
-
 if [ ! -e "$config_filename" ]; then
     write_config "Enter a directory path to backed up files: " "BACKUP_DESTINATION"
     write_config "Enter a path to source directory: " "SOURCE"
@@ -45,5 +24,15 @@ if [ ! -e "$config_filename" ]; then
     write_config "Enter a destination path to backup records .csv file:" "RECORDS_FILE_DESTINATION"
     write_config "Enter a filename to backup records .csv file:" "RECORDS_FILENAME"
 
-    check_config
+    result=$(./check_config.sh "$config_filename")
+    echo "$result"
+    if [[ $result == "Config was set properly" ]]; then
+        echo "\nConfiguration check was successful"
+    elif [[ $result == *"must be a directory"* || $result == *"must be one of"* ]]; then
+        echo "\nConfiguration check failed: $result"
+        rm -f "$config_filename" 
+    else 
+       echo "\nConfiguration check failed: $result"
+        rm -f "$config_filename"  
+    fi
 fi
