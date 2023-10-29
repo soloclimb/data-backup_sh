@@ -3,12 +3,12 @@ config_filename="./backups_config.txt"
 result=$(./check_config.sh "$config_filename")
 echo "$result"
 if [[ $result == "Config was set properly" ]]; then
-    echo "\nConfiguration check was successful"
+    echo -e "Configuration check was successful"
 elif [[ $result == *"must be a directory"* || $result == *"must be one of"* ]]; then
-    echo "\nConfiguration check failed: $result"
+    echo -e "Configuration check failed: $result"
     rm -f "$config_filename" 
 else 
-    echo "Configuration check failed: $result"
+    echo -e "Configuration check failed: $result"
     rm -f "$config_filename"  
 fi
 while IFS= read -r line; do
@@ -17,8 +17,8 @@ while IFS= read -r line; do
     export "$key=$value"
 done < "$config_filename"
 backup() {
-    datetime=`date +"%m/%d/%Y/%H:%M"`
-    backup_file="$BACKUP_DESTINATION/$COMPRESSION_FILENAME.$COMPRESSION_TYPE"
+    datetime=`date +"%m-%d-%Y-%H:%M:%S"`
+    backup_file="$BACKUP_DESTINATION/${COMPRESSION_FILENAME}_($datetime).$COMPRESSION_TYPE"
     if [ -d "$SOURCE" ]; then
         if [ "$COMPRESSION_TYPE" == "tar.gz" ]; then
             tar -czvf "$backup_file" -C "$SOURCE" .
@@ -40,7 +40,6 @@ backup() {
             zip -9 "$backup_file" "${SOURCE##*/}"
             cd -
         fi
-        tar -czvf "$backup_file" -C 
     fi
 }
 backup
