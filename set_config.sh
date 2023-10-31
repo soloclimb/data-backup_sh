@@ -23,6 +23,13 @@ if [ ! -e "$config_filename" ]; then
     write_config "Enter a name for backed up files:" "COMPRESSION_FILENAME" 
     write_config "Enter a destination path to backup records .csv file:" "RECORDS_FILE_DESTINATION"
     write_config "Enter a filename to backup records .csv file:" "RECORDS_FILENAME"
+    cleaning=""
+    echo "Do you wanna your backups to be automatically cleaned *(y/n)"
+    read cleaning
+    if [ "$cleaning" == "y" ]; then
+        write_config "Define retention period in days 1-31" "RETENTION_PERIOD"
+    fi
+
 
     result=$(./check_config.sh "$config_filename")
     echo "$result"
