@@ -36,5 +36,6 @@ crontab -e
 - **In the end of opened file add customised version of the following line:**
 ```bash
  * * * * *  absolute/path/to/your/backup.sh/file
+ * * * * *  absolute/path/to/your/cleaning.sh/file (optional - depending on your configurations)
 ```
 **_Exit and save_ this file**
